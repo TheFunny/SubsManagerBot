@@ -1,0 +1,12 @@
+version: '3'
+services:
+  smb:
+    build: .
+    restart: always
+    environment:
+      LOCAL_USER_ID: '1000'
+    volumes:
+      - ./config.json:/app/config.json
+      - ./sub:/app/sub
+      - ./data:/app/data
+    container_name: smb

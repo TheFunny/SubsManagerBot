@@ -17,11 +17,17 @@ EXPORT = '导出所有'
 
 CMD_START = '启动！'
 
-INLINE_SUB_SERVER = '订阅服务器'
+SUB_SERVER = '订阅服务器'
 
 ADD_SERVER = '添加服务器'
 MSG_ADD_SERVER_SUCCESS = '添加服务器成功'
 MSG_ADD_SERVER_FAIL = '添加服务器失败'
+
+REORDER = '排序'
+MSG_REORDER_SELECT = '<b>服务器排序</b>\n\n请选择需要更改位置的服务器'
+MSG_REORDER_CHOOSE = '<b>服务器排序</b>\n\n当前选择的服务器是：\n{name}\n\n请选择目标位置'
+MSG_REORDER_SUCCESS = '排序成功'
+MSG_REORDER_FAIL = '排序失败'
 
 REMOVE_SERVER = '删除服务器'
 MSG_REMOVE_SERVER_SUCCESS = '删除服务器成功'
@@ -43,8 +49,8 @@ RENAME_USER = '重命名用户'
 MSG_RENAME_USER_SUCCESS = '重命名用户成功'
 MSG_RENAME_USER_FAIL = '重命名用户失败'
 
-MSG_SUB_SERVER = '<b>订阅管理</b>\n\n选择服务器'
-MSG_SUB_SERVER_USER = '<b>订阅管理</b>\n\n选择用户订阅'
+MSG_SUB_SERVER = '<b>🔔 订阅管理</b>\n\n选择服务器'
+MSG_SUB_SERVER_USER = '<b>🔔 订阅管理</b>\n\n选择用户订阅'
 MSG_SUB_SERVER_SUCCESS = '添加订阅成功'
 MSG_SUB_SERVER_FAIL = '添加订阅失败'
 

@@ -13,11 +13,40 @@ async def server(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
           for server_id, name in manager.get_server_enum()]
     kb.append([
         InlineKeyboardButton(ADD, switch_inline_query_current_chat="/add_server "),
+        InlineKeyboardButton(REORDER, callback_data="reorder"),
         InlineKeyboardButton(REMOVE, switch_inline_query_current_chat="/remove_server "),
     ])
     kb.append([InlineKeyboardButton(BACK, callback_data="back")])
     reply_markup = InlineKeyboardMarkup(kb)
     await query.edit_message_text(SERVER, reply_markup=reply_markup)
+
+
+async def reorder(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    server_id = query.data.split("|")
+    if len(server_id) == 1:
+        kb = [[InlineKeyboardButton(name, callback_data=f"reorder|{server_id}")]
+              for server_id, name in manager.get_server_enum()]
+        kb.append([InlineKeyboardButton(BACK, callback_data="server")])
+        reply_markup = InlineKeyboardMarkup(kb)
+        await query.edit_message_text(MSG_REORDER_SELECT, reply_markup=reply_markup)
+    elif len(server_id) == 2:
+        server_id = server_id[1]
+        kb = [[InlineKeyboardButton(name, callback_data=f"reorder|{server_id}|{target_pos}")]
+              for target_pos, (_, name) in enumerate(manager.get_server_enum())]
+        kb.append([InlineKeyboardButton(BACK, callback_data="reorder")])
+        reply_markup = InlineKeyboardMarkup(kb)
+        await query.edit_message_text(
+            MSG_REORDER_CHOOSE.format(name=manager.get_server_name(server_id)),
+            reply_markup=reply_markup
+        )
+    else:
+        server_id, target_pos = query.data.split("|")[1:]
+        if manager.change_server_seq(server_id, target_pos):
+            await update.effective_chat.send_message(MSG_REORDER_SUCCESS)
+        else:
+            await update.effective_chat.send_message(MSG_REORDER_FAIL)
 
 
 async def user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

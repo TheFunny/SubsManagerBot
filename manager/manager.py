@@ -41,6 +41,7 @@ class Manager(Data):
     def __init__(self, filename):
         super().__init__(filename)
         self.server: dict = self.load_server()
+        self.server_seq: dict = self.load_server_seq()
         self.user: dict = self.load_user()
         self.url: str = self.load_url()
         self.pw: str = self.load_pw()
@@ -49,6 +50,11 @@ class Manager(Data):
         if 'server' not in self.data:
             return {}
         return self.data['server']
+
+    def load_server_seq(self) -> dict:
+        if 'server_seq' not in self.data:
+            return {}
+        return self.data['server_seq']
 
     def load_user(self) -> dict:
         if 'user' not in self.data:
@@ -67,6 +73,7 @@ class Manager(Data):
 
     def save(self):
         self.data['server'] = self.server
+        self.data['server_seq'] = self.server_seq
         self.data['user'] = self.user
         self.data['url'] = self.url
         self.data['pw'] = self.pw
@@ -88,6 +95,39 @@ class Manager(Data):
     def server_id_max(self) -> int:
         return int(max(self.server.keys())) if self.server != {} else 0
 
+    def server_seq_init(self) -> None:
+        if self.server_seq != {}:
+            if len(self.server_seq) != len(self.server):
+                for server_id in filter(lambda x: x not in self.server_seq, self.server):
+                    self.server_seq[server_id] = len(self.server_seq)
+                self.save()
+            return
+        for server_seq, server_id in enumerate(self.server):
+            self.server_seq[server_id] = server_seq
+        self.save()
+
+    def change_server_seq(self, server_id: str, target_pos: str) -> bool:
+        self.server_seq_init()
+        target_pos = int(target_pos)
+        original_pos: int = self.server_seq[server_id]
+        if server_id not in self.server:
+            return False
+        if target_pos not in self.server_seq.values():
+            return False
+        if original_pos == target_pos:
+            return True
+        server_seq_sorted = filter(
+            lambda x: min(original_pos, target_pos) <= x[1] <= max(original_pos, target_pos),
+            sorted(self.server_seq.items(), key=lambda x: x[1])
+        )
+        for server_id, pos in server_seq_sorted:
+            if pos == original_pos:
+                self.server_seq[server_id] = target_pos
+            else:
+                self.server_seq[server_id] += 1 if original_pos > target_pos else -1
+        self.save()
+        return True
+
     def add_server(self, name: str) -> bool:
         if name in self.server.values():
             return False
@@ -99,6 +139,7 @@ class Manager(Data):
         if server_id not in self.server:
             return False
         del self.server[server_id]
+        del self.server_seq[server_id]
         for user in self.user.values():
             if server_id in user['server']:
                 del user['server'][server_id]
@@ -120,7 +161,8 @@ class Manager(Data):
         return self.server[server_id]
 
     def get_server_enum(self) -> list:
-        return list(self.server.items())
+        self.server_seq_init()
+        return sorted(self.server.items(), key=lambda x: self.server_seq[x[0]])
 
     @staticmethod
     def gen_md5(name: str) -> str:

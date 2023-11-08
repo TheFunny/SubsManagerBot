@@ -100,7 +100,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         result = [
             InlineQueryResultArticle(
                 id=str(uuid4()),
-                title=f"{INLINE_SUB_SERVER}\n{manager.get_server_name(server_id)}\n{name}",
+                title=f"{SUB_SERVER}\n{manager.get_server_name(server_id)}\n{name}",
                 input_message_content=InputTextMessageContent(query)
             )
         ]
@@ -187,6 +187,7 @@ def main():
         CommandHandler('set_url', command.set_url, filters=user_filter),
         CommandHandler('set_pw', command.set_pw, filters=user_filter),
         CallbackQueryHandler(qy.server, pattern=r'^server$'),
+        CallbackQueryHandler(qy.reorder, pattern=r'^reorder'),
         CallbackQueryHandler(qy.user, pattern=r'^user$'),
         CallbackQueryHandler(qy.sub, pattern=r'^sub$'),
         CallbackQueryHandler(qy.sub_server, pattern=r'^sub_server\|'),

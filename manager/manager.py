@@ -93,7 +93,8 @@ class Manager(Data):
         return self.url, self.pw
 
     def server_id_max(self) -> int:
-        return int(max(self.server.keys())) if self.server != {} else 0
+        server_id = map(int, self.server.keys())
+        return max(server_id) if self.server != {} else 0
 
     def server_seq_init(self) -> None:
         if self.server_seq != {}:

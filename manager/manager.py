@@ -237,7 +237,10 @@ class Manager(Data):
     def get_user_sub(self, name: str) -> list:
         if name not in self.user:
             return []
-        return [link for link in self.user[name]['server'].values()] if self.user[name]['server'] is not None else []
+        return map(
+            lambda x: x[1],
+            sorted(self.user[name]['server'].items(), key=lambda x: self.server_seq[x[0]])
+        ) if self.user[name]['server'] is not None else []
 
     def get_link(self, user: str) -> str:
         return self.user[user]['link']
